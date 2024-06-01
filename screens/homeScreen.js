@@ -1,5 +1,6 @@
 import React, { useState, useEffect , createContext , useContext} from 'react'
 import { View,ScrollView, Text, FlatList, Image, StyleSheet , TouchableOpacity } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 let city = "Ankara"
 const HomeScreen = () => {
@@ -43,23 +44,85 @@ const HomeScreen = () => {
 const useCart = () => {
   return useContext(CartContext);
 };
-  const handleAddToCart = (item) => {
-    // Sepete ekleme işlemini gerçekleştirecek kodlar buraya yazılır
-    // Örneğin:
-    console.log(item)
-    alert('Sepete Eklendi', `${item.name} sepete eklendi!`);
-    //api ile add to cart rotasına
-    // Sepet verilerini güncelleme, API isteği gönderme gibi işlemler yapılabilir
-  };
+  const handleAddToCart = async(item) => {
+    userShoppingCardJSON = {
+      bookId : item._id,
+      sellerBookStoreInfos : item.bookStoreInfos[0],
+      quantity : 1,
+      bookName : item.name
+  }
+    const token = await AsyncStorage.getItem('userToken')
+    console.log(token)
+    if(token){
+      console.log(token)
+      try {
+        const response = await axios.post('https://gavindevjourney.com/mobile/userAddToCard',userShoppingCardJSON, {
+          headers: {
+             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        })
+        console.log("asda")
+        if (response.status === 200) {
+          alert(response.data.message)
+          console.log(response.data)
+  
+        }else {
+         alert(response.data)
+         console.log("hata var")
+          setError('Sunucudan beklenmeyen bir yanıt alındı: ' + response.status);
+        }
+      } catch (error) {
+        console.log(error)
+       let errorCode = error.message.split(" ")[error.message.split(" ").length - 1]
+       if(errorCode == "401"){
+         alert("şifre yanlış")
+         console.log("şifre yanlış")
+       }
+      }
+    }else{
+      alert("sepetinize kitap eklemek için giriş yapmanız gerekmektedir")
+    }
+  }
 
-  const handleToAddFavorite = (item) => {
-    // Sepete ekleme işlemini gerçekleştirecek kodlar buraya yazılır
-    // Örneğin:
-    console.log(item)
-    alert('Sepete Eklendi', `${item.name} sepete eklendi!`);
+  const handleToAddFavorite = async(item) => {
+    userShoppingCardJSON = {
+      bookId : item._id
+  }
+    const token = await AsyncStorage.getItem('userToken')
+    console.log(token)
+    if(token){
+      console.log(token)
+      try {
+        const response = await axios.post('https://gavindevjourney.com/mobile/userAddToFavorite',userShoppingCardJSON, {
+          headers: {
+             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        })
+        console.log("asda")
+        if (response.status === 200) {
+          alert(response.data.message)
+          console.log(response.data)
+  
+        }else {
+         alert(response.data)
+         console.log("hata var")
+          setError('Sunucudan beklenmeyen bir yanıt alındı: ' + response.status);
+        }
+      } catch (error) {
+        console.log(error)
+       let errorCode = error.message.split(" ")[error.message.split(" ").length - 1]
+       if(errorCode == "401"){
+         alert("şifre yanlış")
+         console.log("şifre yanlış")
+       }
+      }
+    }else{
+      alert("sepetinize kitap eklemek için giriş yapmanız gerekmektedir")
+    }
 
-    // Sepet verilerini güncelleme, API isteği gönderme gibi işlemler yapılabilir
-  };
+  }
   useEffect(() => {
 
     const fetchGetMostSelledBooks = async() =>{
