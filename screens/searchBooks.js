@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
 import axios from 'axios';
-const SearchBooks = () => {
+const SearchBooks = ({ navigation }) => {
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,6 +33,15 @@ const SearchBooks = () => {
   const handleSearch = () => {
     fetchBooks("seçiniz", "Ankara", searchTerm);
   };
+  const handleBookPress = (book) => {
+    try {
+      navigation.navigate('BookDetail',{ book })
+    } catch (error) {
+      console.log(error)
+    }
+    
+    
+  }
 
   if (isLoading) {
     return (
@@ -60,14 +69,17 @@ const SearchBooks = () => {
         onChangeText={setSearchTerm}
         onSubmitEditing={handleSearch}
       />
+ 
       <FlatList
         data={books}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.bookItem}>
-            <Image source={{ uri: "https://gavindevjourney.com" + item.images[0].path.replace('public', '') }} style={styles.bookImage} />
+            <TouchableOpacity onPress={() => handleBookPress(item)}>
+            <Image source={{ uri: "https://gavindevjourney.com" + item.images[0].path.replace('public', '') }} onpress style={styles.bookImage} />
             <Text style={styles.bookTitle}>{item.name}</Text>
             <Text style={styles.bookPrice}>{item.bookStoreInfos[0].price} TL</Text>
+            </TouchableOpacity>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.button}>
                 <Text style={styles.buttonText}>Sepete Ekle</Text>

@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import UpdateProfileScreen from './UpdateProfileScreen';
 import FavoritesScreen from './FavoritesScreen';
 import OrdersScreen from './OrdersScreen';
-
+import buyLaterScreen from './buyLaterScreen';
 const Stack = createStackNavigator();
 
 function ProfileScreen({ navigation }) {
@@ -33,6 +33,11 @@ function ProfileScreen({ navigation }) {
         name="Orders"
         component={OrdersScreen}
         options={{ title: 'Siparişler' }}
+      />
+      <Stack.Screen
+        name="buyLater"
+        component={buyLaterScreen}
+        options={{ title: 'daha sonra al listesi' }}
       />
     </Stack.Navigator>
   );
@@ -110,12 +115,24 @@ function ProfileContent({ navigation }) {
         <Text style={styles.buttonText}>Bilgileri Güncelle</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Orders')}>
+        <Text style={styles.buttonText}>Siparişler</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Favorites')}>
-        <Text style={styles.buttonText}>Favoriler</Text>
+        <Text style={styles.buttonText}>Favori listesi</Text>
+      </TouchableOpacity>
+     {/* yeni eklenenler                  */}
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Orders')}>
+        <Text style={styles.buttonText}>yorumlarım</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Orders')}>
-        <Text style={styles.buttonText}>Siparişler</Text>
+        <Text style={styles.buttonText}>değerlendirilen mağazalar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('buyLater')}>
+        <Text style={styles.buttonText}>daha sonra al listesi</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>

@@ -74,6 +74,7 @@ const UsersCard = () => {
 
           if (response.status === 200) {
             console.log(response.data)
+            alert(response.data.message)
           } else {
             setError('Sunucudan beklenmeyen bir yanıt alındı: ' + response.status);
           }
@@ -104,6 +105,7 @@ const UsersCard = () => {
 
           if (response.status === 200) {
             console.log(response.data);
+            alert(response.data.message)
           } else {
             setError('Sunucudan beklenmeyen bir yanıt alındı: ' + response.status);
           }
@@ -136,6 +138,34 @@ const UsersCard = () => {
   
 
   };
+  const handleBuyLater = async(book) => {
+    try {
+      console.log("kitap verisi ------------------------------------------")
+      console.log(book)
+      const token = await AsyncStorage.getItem('userToken');
+      const response = await axios.post('https://gavindevjourney.com/mobile/buyLaterThisBook',book, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 200) {
+        console.log(response.data);
+        alert(response.data.message)
+      } else {
+        setError('Sunucudan beklenmeyen bir yanıt alındı: ' + response.status);
+      }
+    } catch (error) {
+      let errorCode = error.response?.status;
+      if (errorCode === 401) {
+        alert("Oturumunuzun süresi doldu veya geçersiz bir token kullanıyorsunuz. Lütfen tekrar giriş yapın.");
+      } else {
+        setError('Bir hata oluştu: ' + error.message);
+      }
+      console.error(error);
+    }
+  }
   const renderCartItem = ({ item }) => {
     
     const handleQuantityChange = (text) => {
@@ -187,7 +217,7 @@ const UsersCard = () => {
               onChangeText={handleQuantityChange}
             />
           </View>
-          <TouchableOpacity style={styles.removeButton}>
+          <TouchableOpacity style={styles.removeButton} onPress={() => handleBuyLater(item)}>
             <Text style={styles.removeButtonText}>Daha Sonra Al</Text>
           </TouchableOpacity>
         </View>

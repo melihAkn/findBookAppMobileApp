@@ -2,21 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-const FavoritesScreen = () => {
-  const [favoriteBooks, setFavoriteBooks] = useState([]);
+const BuyLaterScreen = () => {
+  const [buyLaterList, setBuyLaterList] = useState([]);
 
   useEffect(() => {
     const fetchFavoriteBooks = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken'); // Token'ı al
-        
-          const response = await axios.get('https://gavindevjourney.com/mobile/userGetFavoritedBooks', {
+  
+          const response = await axios.get('https://gavindevjourney.com/mobile/userGetBuyLaterList', {
             headers: { Authorization: `Bearer ${token}` } // Token'ı header'a ekle
           });
-          console.log(response.data)
-          console.log(response.data.favoritedBooks[0])
-  
-          setFavoriteBooks(response.data.favoritedBooks);
+          console.log(response.data.buyLaterList)
+          setBuyLaterList(response.data.buyLaterList)
         } catch (error) {
           console.error('Error fetching orders:', error);
           // Hata durumunda kullanıcıya bilgi verilebilir (Alert vb.)
@@ -26,7 +24,7 @@ const FavoritesScreen = () => {
     fetchFavoriteBooks();
   }, []);
 
-  const removeFromFavorites = async (bookId) => {
+  const handleAddToCart = async (bookId) => {
     try {
       // Favorilerden çıkarmak için API isteği gönder
         const token = await AsyncStorage.getItem('userToken'); // Token'ı al
@@ -42,15 +40,34 @@ const FavoritesScreen = () => {
       console.error('Error removing from favorites:', error);
     }
   };
-
+  const handeRemoveFromBuyLaterList = async (bookId) => {
+    try {
+      // Favorilerden çıkarmak için API isteği gönder
+        const token = await AsyncStorage.getItem('userToken'); // Token'ı al
+  
+        const response = await axios.post('https://gavindevjourney.com/mobile/userDeleteItemInFavorite',{bookId : bookId}, {
+          headers: { Authorization: `Bearer ${token}` } // Token'ı header'a ekle
+        });
+        if(response.status === 200){
+          alert("kitap başarılı bir şekilde favori listesinden kaldırıldı")
+        }
+      setFavoriteBooks(favoriteBooks.filter(book => book.id !== bookId));
+    } catch (error) {
+      console.error('Error removing from favorites:', error);
+    }
+  };
+  
   const renderItem = ({ item }) => (
     <View style={styles.bookItem}>
       <Image source={{ uri: "https://gavindevjourney.com"+ item.images[0].path.replace('public','') }} style={styles.bookCover} />
       <View style={styles.bookDetails}>
         <Text style={styles.bookTitle}>{item.name}</Text>
         <Text style={styles.bookAuthor}>{item.author}</Text>
-        <TouchableOpacity onPress={() => removeFromFavorites(item._id)}>
-          <Text style={styles.removeButton}>Favorilerden Çıkar</Text>
+        <TouchableOpacity onPress={() => handleAddToCart(item._id)}>
+          <Text style={styles.removeButton}>sepete ekle</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handeRemoveFromBuyLaterList(item._id)}>
+          <Text style={styles.removeButton}>daha sonra al listesinden çıkar</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -58,7 +75,7 @@ const FavoritesScreen = () => {
 
   return (
     <FlatList
-      data={favoriteBooks}
+      data={buyLaterList}
       renderItem={renderItem}
       contentContainerStyle={styles.listContainer}
     />
@@ -102,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FavoritesScreen;
+export default BuyLaterScreen;

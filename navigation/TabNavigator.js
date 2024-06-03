@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/homeScreen';
-import SearchBooks from '../screens/searchBooks';
 import UsersCard from '../screens/usersCard';
 const Tab = createBottomTabNavigator();
 import StackNavigator from '../navigation/StackNavigator'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
-
+import BookDetailStackNavigator from './bookPressNavigator';
 const TabNavigator = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
@@ -21,7 +19,8 @@ const TabNavigator = () => {
     <Tab.Navigator>
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={BookDetailStackNavigator}
+        initialParams={{ location: 'Home' }}
         options={{
           headerShown: false,
           tabBarLabel: 'Anasayfa',
@@ -29,7 +28,8 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="searchBooks"
-        component={SearchBooks}
+        component={BookDetailStackNavigator}
+        initialParams={{ location: 'SearchBooks' }}
         options={{
           headerShown: false,
           tabBarLabel: 'Kitaplar',
@@ -44,11 +44,11 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-      name='giriş yap'
+      name='Account'
       component={StackNavigator}
       options={{
         headerShown : false,
-        tabBarLabel : 'giriş yap'
+        tabBarLabel: isLoggedIn ? 'Profil' : 'Giriş Yap',
       }}
       initialParams={{ isLoggedIn: isLoggedIn }}
       />

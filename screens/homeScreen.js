@@ -3,7 +3,10 @@ import { View,ScrollView, Text, FlatList, Image, StyleSheet , TouchableOpacity }
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 let city = "Ankara"
+import { useNavigation } from '@react-navigation/native';
+
 const HomeScreen = () => {
+  const navigation = useNavigation();
   const [getMostSelledBooks, setGetMostSelledBooks] = useState([])
   const [getNewlyAddedBooks, setGetNewlyAddedBooks] = useState([])
   const [getBooksByMostPopularCategory, setGetBooksByMostPopularCategory] = useState([])
@@ -20,7 +23,17 @@ const HomeScreen = () => {
     skip: 0,
     limit: 21
   }
-
+  const handleBookPress = (book) => {
+    try {
+      console.log(book)
+     navigation.navigate('BookDetail',{book})
+      //navigation.navigate('bookPressNavigator', { screen: 'BookDetail', params: { book } }); // BookDetailStackNavigator'a gidip BookDetail ekranını aç
+    } catch (error) {
+      console.log(error)
+    }
+    
+    
+  }
 
 
   const CartContext = createContext();
@@ -116,6 +129,9 @@ const useCart = () => {
        if(errorCode == "401"){
          alert("şifre yanlış")
          console.log("şifre yanlış")
+       }else if(errorCode == "409"){
+        alert("bu kitap zaten favori listenizde")
+
        }
       }
     }else{
@@ -287,9 +303,11 @@ const useCart = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.bookItem}>
+            <TouchableOpacity onPress={() => handleBookPress(item)}>
             <Image source={{ uri: "https://gavindevjourney.com"+ item.images[0].path.replace('public','') }} style={styles.bookImage} />
             <Text style={styles.bookTitle}>{item.name}</Text>
             <Text style={styles.bookPrice}>{item.bookStoreInfos[0].price} TL</Text>
+            </TouchableOpacity>
         <View>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText} onPress={() => handleAddToCart(item)}>sepete ekle</Text>
@@ -313,9 +331,11 @@ const useCart = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.bookItem}>
+            <TouchableOpacity onPress={() => handleBookPress(item)}>
             <Image source={{ uri: "https://gavindevjourney.com"+ item.images[0].path.replace('public','') }} style={styles.bookImage} />
             <Text style={styles.bookTitle}>{item.name}</Text>
             <Text style={styles.bookPrice}>{item.bookStoreInfos[0].price} TL</Text>
+            </TouchableOpacity>
         <View>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText} onPress={() => handleAddToCart(item)}>sepete ekle</Text>
@@ -339,9 +359,11 @@ const useCart = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.bookItem}>
+            <TouchableOpacity onPress={() => handleBookPress(item)}>
             <Image source={{ uri: "https://gavindevjourney.com"+ item.images[0].path.replace('public','') }} style={styles.bookImage} />
             <Text style={styles.bookTitle}>{item.name}</Text>
             <Text style={styles.bookPrice}>{item.bookStoreInfos[0].price} TL</Text>
+            </TouchableOpacity>
         <View>
         <TouchableOpacity style={styles.button} onPress={() => handleAddToCart(item)}>
           <Text style={styles.buttonText}>sepete ekle</Text>

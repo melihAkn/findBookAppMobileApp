@@ -126,7 +126,10 @@ const UserLoginScreen = ({ navigation }) => {
         const statusCode = error.message.split(" ")[error.message.split(" ").length - 1]
         if(statusCode == "400"){
           alert("kullanıcı adı veya şifre yanlış")
-        }else{
+        }else if(statusCode == "401"){
+          alert("kullanıcı adı veya şifre yanlış")
+        }
+        else{
           console.log(error)
           alert("server error")
         }
